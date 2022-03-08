@@ -1,17 +1,18 @@
 plugins {
-	id 'org.springframework.boot' version '2.3.4.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-	id 'java'
-	id 'lenala.azure.azurewebapp' version '1.0'
+    id 'org.springframework.boot' version '2.6.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id "io.freefair.lombok" version "6.4.1"
 }
 
 
 group = 'com.example'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0'
 sourceCompatibility = '11'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+    mavenLocal()
 }
 
 ext {
@@ -19,9 +20,7 @@ ext {
 }
 
 dependencies {
-	// tag::actuator[]
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -31,29 +30,11 @@ dependencies {
 }
 
 dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 test {
-	useJUnitPlatform()
-}
-
-azureWebApp {
-	resourceGroup = 'myGroup'
-	appName = 'demogradleapp'
-	pricingTier = 'P1v2'
-	region = 'westeurope'
-	appService = {
-		type = 'linux'
-		runtimeStack='jre8'
-		javaVersion = '1.8'
-	}
-	authentication = {
-		type = 'azurecli'
-	}
-	deployment = {
-		type = 'jar'
-	}
+    useJUnitPlatform()
 }
