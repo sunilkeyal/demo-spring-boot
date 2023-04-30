@@ -1,6 +1,17 @@
-This demo2 application is a simple spring boot application with no other dependencies
-So that it can be deployed in Azure, Kubernetes etc.
+# spring-boot-minimal
+
+This is a simple spring boot application with no other dependencies
+So that it can be deployed in Docker, Azure, Kubernetes etc for testing the deployment infrastructure.
  
+## Install in docker container
+- ./gradlew clean build
+- docker image ls -a (view list of images)
+- docker rmi minimal (delete the image if exists)
+- docker build -t minimal .
+- docker rm --force minimal (deletes the container if exists)
+- docker run -p 8080:8080 --name minimal minimal;latest
+  - verify at http://localhost:8080/hello
+
 
 # Kubernetes install in ubuntu and general commands
 https://kubernetes.io/docs/reference/kubectl/cheatsheet/
@@ -36,17 +47,17 @@ alias kubectl='microk8s kubectl'
 # Kubernetes dashboard
 https://10.152.183.169/#/overview?namespace=default
 
-# demo2 service in kubernetes
+# minimal service in kubernetes
 - ./gradlew clean build 
 - docker login
-- docker build -t sunilkeyal/demo2 .
-- docker push sunilkeyal/demo2
-- microk8s kubectl create deployment demo2 --image=sunilkeyal/demo2
-- microk8s kubectl scale deployment demo2 --replicas=4
-- microk8s kubectl expose deployment demo2 --type=NodePort --port=8080 --name=demo2-service
+- docker build -t sunilkeyal/minimal .
+- docker push sunilkeyal/minimal
+- microk8s kubectl create deployment minimal --image=sunilkeyal/minimal
+- microk8s kubectl scale deployment minimal --replicas=4
+- microk8s kubectl expose deployment minimal --type=NodePort --port=8080 --name=minimal-service
 - microk8s kubectl get all --all-namespaces (see the service ip)
 http://<service_id>:8080/hello
-- microk8s kubectl delete deployment demo2
+- microk8s kubectl delete deployment minimal
 
 # How to get token for kubernetes
 token=$(microk8s kubectl -n kube-system get secret | grep default-token | cut -d " " -f1)
