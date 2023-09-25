@@ -1,9 +1,6 @@
 # Start with a base image containing Java runtime
 FROM eclipse-temurin:17
 
-# Add Maintainer Info
-LABEL maintainer="sunilkeyal@hotmail.com"
-
 # Add a volume pointing to /tmp
 VOLUME /tmp
 

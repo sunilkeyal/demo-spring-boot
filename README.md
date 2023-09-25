@@ -1,71 +1,62 @@
 # spring-boot-minimal
 
 This is a simple spring boot application with no other dependencies
-So that it can be deployed in Docker, Azure, Kubernetes etc for testing the deployment infrastructure.
+So that it can be deployed in Docker, Kubernetes, Azure etc.
  
-## Install in docker container
+## Install spring-boot-minimal in docker container using Dockerfile
 - ./gradlew clean build
+- docker rm --force minimal (deletes the container if exists)
 - docker image ls -a (view list of images)
 - docker rmi minimal (delete the image if exists)
 - docker build -t minimal .
-- docker rm --force minimal (deletes the container if exists)
 - docker run -p 8080:8080 --name minimal minimal;latest
   - verify at http://localhost:8080/hello
 
+## Install spring-boot-minimal in docker container using docker-compose
+- https://docs.docker.com/compose/reference/overview/
+- ./gradlew clean build
+- docker rm --force minimal (deletes the container if exists)
+- docker image ls -a (view list of images)
+- docker rmi minimal (delete the image if exists)
+- docker build -t minimal .  (build the image)
+- docker-compose up -d (-d for detached mode)
+  - verify at http://localhost:8080/hello
+- docker-compose -f abc-compose.yml up -d (docker-compose.yml is default but another file can be used this way)
+- docker-compose down (to stop and delete containers)
 
-# Kubernetes install in ubuntu and general commands
-https://kubernetes.io/docs/reference/kubectl/cheatsheet/
+## Install spring-boot-minimal in Kubernetes inside Docker Desktop
 
-- sudo snap install microk8s --classic
-- microk8s status --wait-ready
-- sudo ufw allow in on cni0 && sudo ufw allow out on cni0
-- sudo ufw default allow routed
-- sudo usermod -a -G microk8s $USER
-- microk8s enable dashboard dns registry istio
-- microk8s kubectl get all --all-namespaces
-- microk8s dashboard-proxy
-- microk8s start
-- microk8s stop
-- microk8s kubectl get nodes
-- microk8s kubectl get services
-- microk8s kubectl get pods
-- microk8s kubectl cluster-info
-- microk8s kubectl get namespaces
-- kubectl config set-context --current --namespace=<insert-namespace-name-here>emove
+### Install kubernetes dashboard in Docker Desktop (Or use OpenLens)
+- https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
 
-# Create bash alias for kubectl inside .bash_alias file
-alias kubectl='microk8s kubectl'
+### Few kubectl commands
+- kubectl get all --all-namespaces
+- kubectl get nodes
+- kubectl get services
+- kubectl get pods
+- kubectl cluster-info
+- kubectl get namespaces
 
-#  First service (microbot) in kubernetes
-- microk8s kubectl create deployment microbot --image=dontrebootme/microbot:v1
-- microk8s kubectl scale deployment microbot --replicas=4
-- microk8s kubectl expose deployment microbot --type=NodePort --port=80 --name=microbot-service
-- microk8s kubectl get all --all-namespaces (see the service)
-- access the service using http://<ip_address> (get ip address from above command)
-- microk8s kubectl delete deployment microbot
+###  Deploy a sample appllication (microbot) in kubernetes
+- kubectl create deployment microbot --image=dontrebootme/microbot:v1
+- kubectl scale deployment microbot --replicas=4
+- kubectl expose deployment microbot --type=NodePort --port=80 --name=microbot-service
+- kubectl get all --all-namespaces
+- kubectl get all -n default (get all from default namespace)
+  - access the service using http://<ip_address> (get ip address from above command)
+    - Make it work (It currently does not work)
+- kubectl delete deployment microbot
 
-# Kubernetes dashboard
-https://10.152.183.169/#/overview?namespace=default
-
-# minimal service in kubernetes
-- ./gradlew clean build 
+### Deploy spring-boot-minimal in kubernetes
+- ./gradlew clean build
 - docker login
 - docker build -t sunilkeyal/minimal .
-- docker push sunilkeyal/minimal
-- microk8s kubectl create deployment minimal --image=sunilkeyal/minimal
-- microk8s kubectl scale deployment minimal --replicas=4
-- microk8s kubectl expose deployment minimal --type=NodePort --port=8080 --name=minimal-service
-- microk8s kubectl get all --all-namespaces (see the service ip)
-http://<service_id>:8080/hello
-- microk8s kubectl delete deployment minimal
+- docker push sunilkeyal/minimal  (this will push to docker hub)
+- kubectl create deployment minimal --image=sunilkeyal/minimal
+- kubectl scale deployment minimal --replicas=4
+- kubectl expose deployment minimal --type=LoadBalancer --port=8080 --name=minimal-service
+  - access the service using http://localhost:8080/hello
+- kubectl get all --all-namespaces (see the service ip)
+- kubectl get all -n default (get all from default namespace)
+- kubectl delete deployment minimal
 
-# How to get token for kubernetes
-token=$(microk8s kubectl -n kube-system get secret | grep default-token | cut -d " " -f1)
-microk8s kubectl -n kube-system describe secret $token
-
-
-eyJhbGciOiJSUzI1NiIsImtpZCI6IndScnRTaTdRZElsN1FOTzVwTG1YV3J6djFHUFotbkpOX0t4NzFoQ3prZmcifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJkZWZhdWx0LXRva2VuLThmZ2d0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImRlZmF1bHQiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJmMDE2MjNiZi0xMGZiLTQ4MzgtYmZmYy02OTdjYjg4Y2JkYTUiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZS1zeXN0ZW06ZGVmYXVsdCJ9.KfpXQi2hYiXGW0nuJDCoMdqzxz4WkIzbWaB_denq_lbPZC6fCDsgyi4iLsq1TjbYUaVo3uP5zQg0Nlwpk-EGlRgze1QMv22hDlKCmTFUoe9I6IDOMvlk-7-A5SqsMOT1zQNhBsP_FHo4Q4fyf4r1_H-3BG_uBXwQQlFqE2Joh8YxA_BFT7URIIMjh3lJDs1zceR2cch2jg0hXJsSfeMQ5aVNl4QH_kOJgWAOxaXF9sftySF2Z9RPWUj8vfB0sSEJkWtG_N2fjDfJfoRRoszVyAZt5LOPNrAdm04thIZ7Y2Gy92rA0-dj1h0viGknp5gN2HdfH1QgFzfo9VEon0W6zw
-
-# FIX Empty pod/service issue
-- kubectl delete clusterrolebinding kubernetes-dashboard
-- kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard --user=clusterUser
