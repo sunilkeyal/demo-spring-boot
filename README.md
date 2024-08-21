@@ -2,7 +2,31 @@
 
 This is a simple spring boot application with no other dependencies
 So that it can be deployed in Docker, Kubernetes, Azure etc.
- 
+
+Install the following VS Code Extensions
+## VS Code Extensions
+- Extension Pack for Java (This will install the following)
+  - Language Support for Java
+  - Debugger for Java
+  - Test Runner for Java
+  - Maven for Java
+  - Gradle for Java
+  - Project Manager for Java
+  - IntelliCode
+- Java extension pack (This will install the following)
+  - Maven for Java
+  - Language Support for Java
+  - Debugger for Java
+  - Test Runner for java
+  - Extension Pack for Java
+  - Project Manager for Java
+  -  Spring initializer Java Support
+  -  Java language support
+- Spring Boot extension pack
+  - spring iniializer java support
+  - spring boot tools
+  - spring boot dashboard
+
 ## Install spring-boot-minimal in docker container using Dockerfile
 - ./gradlew clean build
 - docker rm --force minimal (deletes the container if exists)
