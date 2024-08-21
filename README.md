@@ -26,7 +26,7 @@ Install the following VS Code Extensions
   - spring iniializer java support
   - spring boot tools
   - spring boot dashboard
-
+Uninstall Java Language Support extension
 ## Install spring-boot-minimal in docker container using Dockerfile
 - ./gradlew clean build
 - docker rm --force minimal (deletes the container if exists)
